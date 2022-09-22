@@ -1,0 +1,27 @@
+drop extension if exists pg_spi;
+NOTICE:  extension "pg_spi" does not exist, skipping
+create extension pg_spi;
+drop table if exists abc;
+NOTICE:  table "abc" does not exist, skipping
+create table abc(id int primary key);
+-- Execute and confirm it was inserted
+select execute_and_commit('insert into abc(id) values (1)');
+ execute_and_commit 
+--------------------
+                  1
+(1 row)
+
+select * from abc;
+ id 
+----
+  1
+(1 row)
+
+select execute_and_rollback('insert into abc(id) values (2)');
+ERROR:  portal snapshots (0) did not account for all active snapshots (1)
+select * from abc;
+ id 
+----
+  1
+(1 row)
+
